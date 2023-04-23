@@ -1,0 +1,28 @@
+.title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
+    background-color: #001529;
+    color: #ffffff;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+  
+  .title-bar .title {
+    -webkit-app-region: no-drag;
+  }
+  
+  .title-bar button {
+    -webkit-app-region: no-drag;
+    background: none;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  
+  .title-bar button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }

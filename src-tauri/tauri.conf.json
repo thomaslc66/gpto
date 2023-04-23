@@ -1,0 +1,91 @@
+{
+  "build": {
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "loger",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": true,
+        "relaunchDangerousAllowSymlinkMacos": false
+      },
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "hide":true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": false,
+        "startDragging": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "com.gpto.dev",
+      "targets": "all"
+    },
+    "security": {
+      "csp": null
+    },
+    "updater": {
+      "active": false
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "visible": false,
+        "title": "About",
+        "label": "about",
+        "url": "about.html",
+        "width": 800,
+        "height": 600,
+        "decorations": false
+      },
+      {
+        "title": "Input",
+        "label": "input",
+        "url": "input_window.html",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "visible": false,
+        "decorations": false
+      },
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "visible": false,
+        "title": "Settings",
+        "label": "settings",
+        "url": "settings.html",
+        "width": 800,
+        "height": 600,
+        "decorations": false
+      }
+    ]
+  }
+}
