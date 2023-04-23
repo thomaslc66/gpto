@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "loger",
+    "productName": "gpto",
     "version": "0.1.0"
   },
   "tauri": {
@@ -56,11 +56,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
+        "resizable": false,
         "visible": false,
         "title": "About",
         "label": "about",
-        "url": "about.html",
+        "url": "app://./index.html",
         "width": 800,
         "height": 600,
         "decorations": false
@@ -68,20 +68,20 @@
       {
         "title": "Input",
         "label": "input",
-        "url": "input_window.html",
+        "url": "app://./input_window.html",
         "width": 800,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "visible": false,
         "decorations": false
       },
       {
         "fullscreen": false,
-        "resizable": true,
+        "resizable": false,
         "visible": false,
         "title": "Settings",
         "label": "settings",
-        "url": "settings.html",
+        "url": "app://./settings.html",
         "width": 800,
         "height": 600,
         "decorations": false

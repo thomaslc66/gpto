@@ -1,14 +1,7 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import {
-  createStyleImportPlugin,
-  // AndDesignVueResolve,
-  // VantResolve,
-  // ElementPlusResolve,
-  // NutuiResolve,
-  AntdResolve,
-} from "vite-plugin-style-import";
+import { createStyleImportPlugin, AntdResolve } from "vite-plugin-style-import";
 
 const mobile =
   process.env.TAURI_PLATFORM === "android" ||
@@ -19,13 +12,7 @@ export default defineConfig(async () => ({
   plugins: [
     react(),
     createStyleImportPlugin({
-      resolves: [
-        // AndDesignVueResolve(),
-        // VantResolve(),
-        // ElementPlusResolve(),
-        // NutuiResolve(),
-        AntdResolve(),
-      ],
+      resolves: [AntdResolve()],
       libs: [
         // If you don’t have the resolve you need, you can write it directly in the lib, or you can provide us with PR
         {
@@ -63,13 +50,20 @@ export default defineConfig(async () => ({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    outDir: "dist",
+    assetsDir: "./",
     build: {
       rollupOptions: {
         input: {
-          main: resolve(__dirname, "about.html"),
-          settings: resolve(__dirname, "settings.html"),
-          input: resolve(__dirname, "input_window.html"),
+          main: resolve(__dirname, "public/index.html"),
+          settings: resolve(__dirname, "src-tauri/views/settings.html"),
+          input: resolve(__dirname, "src-tauri/views/input_window.html"),
         },
+      },
+    },
+    resolve: {
+      alias: {
+        "@": resolve(__dirname, "src"),
       },
     },
   },
