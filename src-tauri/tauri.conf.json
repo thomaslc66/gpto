@@ -4,7 +4,7 @@
     "beforeBuildCommand": "yarn build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
-    "withGlobalTauri": false
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "gpto",
@@ -20,8 +20,7 @@
         "relaunchDangerousAllowSymlinkMacos": false
       },
       "shell": {
-        "all": false,
-        "open": true
+        "all": false
       },
       "window": {
         "hide":true,
@@ -60,7 +59,7 @@
         "visible": false,
         "title": "About",
         "label": "about",
-        "url": "app://./index.html",
+        "url": "index.html",
         "width": 800,
         "height": 600,
         "decorations": false
@@ -68,7 +67,7 @@
       {
         "title": "Input",
         "label": "input",
-        "url": "app://./input_window.html",
+        "url": "input_window.html",
         "width": 800,
         "height": 600,
         "resizable": false,
@@ -81,7 +80,7 @@
         "visible": false,
         "title": "Settings",
         "label": "settings",
-        "url": "app://./settings.html",
+        "url": "settings.html",
         "width": 800,
         "height": 600,
         "decorations": false

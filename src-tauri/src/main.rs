@@ -6,6 +6,10 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio::task::spawn_blocking;
 use tokio::sync::Mutex;
 use tokio::runtime::Runtime;
+use tokio::time::{sleep, Duration};
+use tokio::select;
+use tokio::sync::oneshot::error::TryRecvError;
+
 
 // Tauri
 use tauri::{Manager};
@@ -34,9 +38,12 @@ use rand::Rng;*/
 
 
 // Other
+use futures::future::ready;
+
 use std::sync::{Arc, RwLock};
 use std::thread;
-use std::time::Duration;
+
+// use std::time::Duration;
 use std::fs;
 use std::path::Path;
 use once_cell::sync::OnceCell;
@@ -59,6 +66,12 @@ struct Settings {
     use_input_box: bool,
     max_tokens: i16,
     temperature: f32
+}
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  args: Vec<String>,
+  cwd: String,
 }
 
 impl Settings {
@@ -323,9 +336,12 @@ fn select_all_and_delete(keyboard: &mut Enigo) {
 * @goal: take the text: String input and send it to chatGPT
 *
 ************************************************ */
-async fn send_to_gpt_api(text: String) -> Result<String, Box<dyn std::error::Error>> {
+async fn send_to_gpt_api(text: String) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
     let settings = read_settings_from_file().await?;
     let client = Client::new();
+    println!("settings {}", settings.api_key);
+    println!("settings {}", settings.max_tokens);
+    println!("settings {}", settings.temperature);
     let api_key = settings.api_key;
     let url = "https://api.openai.com/v1/completions";
     let payload = json!({
@@ -355,12 +371,76 @@ async fn send_to_gpt_api(text: String) -> Result<String, Box<dyn std::error::Err
     if let Some(completions) = json_response.get("choices") {
         if let Some(first_completion) = completions.get(0) {
             if let Some(text) = first_completion.get("text") {
+                println!("{}", text.as_str().unwrap().to_string());
                 return Ok(text.as_str().unwrap().to_string());
             } 
         } 
     }
 
     Err("Failed to retrieve response from GPT API".into())
+}
+
+async fn print_dots_task(mut stop_signal: tokio::sync::oneshot::Receiver<()>) {
+    // Run an infinite loop until a stop signal is received
+    let mut keyboard = Enigo::new(); // Wrap the Enigo instance in an Arc<Mutex<...>>
+    loop {
+        select! {
+            res = ready(stop_signal.try_recv()) => {
+
+                match res {
+                    Ok(_) => {
+                        println!("Task 2 stopped");
+                        break;
+                    }
+                    Err(TryRecvError::Empty) => {
+                        // No message received yet, continue looping
+                        tokio::time::sleep(Duration::from_secs(1));
+                        keyboard.key_sequence(".");
+                    }
+                    Err(TryRecvError::Closed) => {
+                        // Channel closed, stop looping
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/***********************************************
+*
+* @function: execute_gpt_task()
+* @goal: call the gpt api, print dots while waiting, then erase and 
+*   print the answer.
+*
+*
+* **********************************************/
+async fn execute_gpt_task(prompt: String) {
+ 
+    let mut keyboard = Enigo::new(); // Wrap the Enigo instance in an Arc<Mutex<...>>
+
+    // Create a oneshot channel to stop task2
+    let (stop_signal_sender, stop_signal_receiver) = tokio::sync::oneshot::channel();
+
+    // Run task2 in the background
+    let print_dots_task_handle = tokio::spawn(print_dots_task(stop_signal_receiver));
+    let result = send_to_gpt_api(prompt).await; // Lock the Mutex
+
+    let _ = stop_signal_sender.send(());
+    // Wait for task2 to complete
+
+    sleep(Duration::from_millis(500)).await; // then wait a bit
+    select_all_and_delete(&mut keyboard); // select all text and prompt and delete
+
+    match result {
+        Ok(output) => {
+            let response = format!(" {}", output);
+            keyboard.key_sequence(&response); // print using the virtual keyboard
+        }
+        Err(e) => {
+            eprintln!("Error: {}", e);
+        }
+    }
 }
 
 /* ***********************************************
@@ -446,21 +526,7 @@ async fn start_keylogger(app_handle: AppHandle, app_settings: Arc<RwLock<Setting
                             app_state.buffer.clear(); // clear everything
                             app_state.trigger_detected = false; // rested trigger detected to false
 
-                            let mut keyboard = Enigo::new(); // create a virtual keyboard
-                            let result = send_to_gpt_api(prompt).await; // send prompt to chat gpt
-                            thread::sleep(Duration::from_millis(500)); // then wait a bit
-                            select_all_and_delete(&mut keyboard); // select all text and prompt and delete
-
-                            // Get the chat GPT response
-                            match result {
-                                Ok(output) => {
-                                    let response = format!(" {}", output);
-                                    keyboard.key_sequence(&response); // print using the virtual keyboard
-                                }
-                                Err(e) => {
-                                    eprintln!("Error: {}", e);
-                                }
-                            }
+                            execute_gpt_task(prompt).await;
 
                         }
                     }
@@ -483,6 +549,7 @@ async fn start_keylogger(app_handle: AppHandle, app_settings: Arc<RwLock<Setting
 ************************************************ */
 #[tokio::main]
 async fn main() {
+
     let keylogger_handle = OnceCell::new();
     let rt = Runtime::new().unwrap();
 
@@ -520,12 +587,10 @@ async fn main() {
                     }
                     "settings" => {
                         let window = app.get_window("settings").unwrap();
-                        window.open_devtools();
                         window.show().unwrap();
                     }
                     "input_window" => {
                         let window = app.get_window("input").unwrap();
-                        window.open_devtools();
                         window.show().unwrap();
                     }
                     "quit" => {

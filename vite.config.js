@@ -1,18 +1,39 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { createStyleImportPlugin, AntdResolve } from "vite-plugin-style-import";
-
-const mobile =
-  process.env.TAURI_PLATFORM === "android" ||
-  process.env.TAURI_PLATFORM === "ios";
+import {
+  createStyleImportPlugin,
+  AndDesignVueResolve,
+  VantResolve,
+  ElementPlusResolve,
+  NutuiResolve,
+  AntdResolve,
+} from "vite-plugin-style-import";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
+  appType: "mpa",
   plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: "src-tauri/config-default.json", // Update this with the correct path to your config.json file
+          dest: "",
+          rename: "config.json",
+        },
+      ],
+      hook: "writeBundle", // Run the copy task after the bundle is generated
+    }),
     react(),
     createStyleImportPlugin({
-      resolves: [AntdResolve()],
+      resolves: [
+        AndDesignVueResolve(),
+        VantResolve(),
+        ElementPlusResolve(),
+        NutuiResolve(),
+        AntdResolve(),
+      ],
       libs: [
         // If you don’t have the resolve you need, you can write it directly in the lib, or you can provide us with PR
         {
@@ -51,19 +72,12 @@ export default defineConfig(async () => ({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
     outDir: "dist",
-    assetsDir: "./",
-    build: {
-      rollupOptions: {
-        input: {
-          main: resolve(__dirname, "public/index.html"),
-          settings: resolve(__dirname, "src-tauri/views/settings.html"),
-          input: resolve(__dirname, "src-tauri/views/input_window.html"),
-        },
-      },
-    },
-    resolve: {
-      alias: {
-        "@": resolve(__dirname, "src"),
+    assetsDir: "",
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        settings: resolve(__dirname, "settings.html"),
+        input: resolve(__dirname, "input_window.html"),
       },
     },
   },

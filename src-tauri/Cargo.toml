@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = ["devtools", "process-relaunch", "shell-open", "system-tray", "window-hide", "window-maximize", "window-minimize", "window-start-dragging"] }
+tauri = { version = "1.2", features = ["devtools", "process-relaunch", "system-tray", "window-hide", "window-maximize", "window-minimize", "window-start-dragging"] }
 tokio = { version = "1.0", features = ["full"] }
 serde = "1.0"
 serde_json = "1.0"
@@ -26,7 +26,8 @@ aes-gcm = "0.10.1"
 aes = "0.7"
 aead = "0.5.2"
 rand = "0.8"
-
+tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
+futures = "0.3.16"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

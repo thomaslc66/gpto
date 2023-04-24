@@ -39,6 +39,8 @@ function Settings() {
         setEndTrigger(settings.end_trigger);
         setStartTrigger(settings.start_trigger);
         setUseInputBox(settings.use_input_box);
+        setMaxTokens(settings.max_tokens);
+        setTemperature(settings.temperature);
         //update the form
         form.setFieldsValue({
           apiKey: settings.api_key,
@@ -56,6 +58,23 @@ function Settings() {
     }
     fetchSettings();
   }, []);
+
+  // In case relaunch is not working
+  async function restartApp() {
+    // Save the path to the current executable.
+    const exePath = await app.getPath("exe");
+
+    // Spawn a new instance of the application.
+    await invoke("spawn", {
+      command: exePath,
+      args: [],
+      stdout: "inherit",
+      stderr: "inherit",
+    });
+
+    // Close the current instance of the application.
+    app.exit(0);
+  }
 
   async function saveSettings() {
     setLoading(true);
@@ -75,6 +94,7 @@ function Settings() {
     window.hide();
     let reload_status = await relaunch();
     console.log("reaload_status", reload_status);
+    // await restartApp();
   }
 
   return (
@@ -190,7 +210,7 @@ function Settings() {
                       <InputNumber
                         min={0}
                         max={1}
-                        value={temperature}
+                        value={Number(temperature).toFixed(1)}
                         onChange={(value) => setTemperature(value)}
                         style={{ marginLeft: 16 }}
                         step={0.1}
