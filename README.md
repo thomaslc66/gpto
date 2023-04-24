@@ -10,6 +10,20 @@ This tool was build as a side project in order to help everybody, on all platefo
 I'm not a developper, but I have some knowledge. 
 This is also my first application using Tauri and Rust so there's a lot of concept I didn't catch well and maybe also a lot of mistakes in my code, but as I'm learning I'm trying to improve it and make it better everyday.
 
+<table align="center">
+  <tr>
+    <td><img src="https://user-images.githubusercontent.com/9827392/234107902-0c2d1178-7576-4e09-8bb8-54988bce6af9.gif" width="350" height="250"/>
+</td>
+    <td><img src="https://user-images.githubusercontent.com/9827392/234108945-5e403a34-67f8-43d5-8dd4-1d72d19137d5.gif" width="350" height="250"/>
+</td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="https://user-images.githubusercontent.com/9827392/234108509-9ca75d9f-a6d7-40a5-afb5-32bcfae6b181.gif"/>
+</td>
+  </tr>
+</table>
+
+
 ## Status
 
 For now the I'm listing all the bugs and improvement in the Issue of this repository (and there's a lot). 
